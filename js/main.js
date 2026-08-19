@@ -6,7 +6,7 @@
 
   const getWithdrawMethod = () => {
     const app = window.__APP || {};
-    return app.withdrawSelected || app.withdraw || "BANK";
+    return app.withdrawSelected || app.withdraw || "CASHAPP";
   };
   /* ---------------------------
        Variáveis / helpers de modal
@@ -483,10 +483,16 @@
         if (labelEl) labelEl.textContent = "IBAN";
         keyTypeElement.textContent = t("withdraw.method.iban", "Transferencia bancaria (IBAN)");
       } else if (method === "BANK") {
-        if (labelEl) labelEl.textContent = "Cuenta";
-        keyTypeElement.textContent = t("withdraw.method.bank", "Transferencia bancaria");
+        if (labelEl) labelEl.textContent = "Account";
+        keyTypeElement.textContent = t("withdraw.method.bank", "Bank transfer");
+      } else if (method === "CASHAPP") {
+        if (labelEl) labelEl.textContent = t("form.cashtag", "$Cashtag");
+        keyTypeElement.textContent = t("withdraw.method.cashapp", "Cash App");
+      } else if (method === "VENMO") {
+        if (labelEl) labelEl.textContent = t("form.venmo_username", "Venmo Username");
+        keyTypeElement.textContent = t("withdraw.method.venmo", "Venmo");
       } else if (method === "PAYPAL") {
-        if (labelEl) labelEl.textContent = "PayPal";
+        if (labelEl) labelEl.textContent = t("form.paypal_email", "Email Address");
         keyTypeElement.textContent = t("withdraw.method.paypal", "PayPal");
       } else if (method === "UK") {
         if (labelEl) labelEl.textContent = "Bank (UK)";
@@ -1036,6 +1042,18 @@
     return n.length >= 6 && n.length <= 10;
   }
 
+  function validateCashtag(value) {
+    const tag = String(value || "").trim().replace(/^\$/, "");
+    return /^[A-Za-z][A-Za-z0-9]{2,19}$/.test(tag);
+  }
+
+  function validateVenmo(value) {
+    const v = String(value || "").trim();
+    if (validateEmail(v)) return true;
+    const user = v.replace(/^@/, "");
+    return /^[A-Za-z0-9._-]{3,30}$/.test(user);
+  }
+
   function checkWithdrawFormValidity() {
     const nomeInput = document.getElementById("nome");
     const keyInput = document.getElementById("pix-key-input");
@@ -1047,6 +1065,25 @@
     const isNomeFilled = nomeInput.value.trim().length > 0;
     const method = getWithdrawMethod();
     const keyValue = keyInput.value.trim();
+
+    if (method === "CASHAPP") {
+      const ok = isNomeFilled && validateCashtag(keyValue);
+      btnEnviar.classList.toggle("btn-disabled", !ok);
+      return;
+    }
+
+    if (method === "VENMO") {
+      const ok = isNomeFilled && validateVenmo(keyValue);
+      btnEnviar.classList.toggle("btn-disabled", !ok);
+      return;
+    }
+
+    // PayPal
+    if (method === "PAYPAL") {
+      const ok = isNomeFilled && validateEmail(keyValue);
+      btnEnviar.classList.toggle("btn-disabled", !ok);
+      return;
+    }
 
     // PIX / BANK
     if (method === "PIX" || method === "IBAN" || method === "BANK") {
@@ -1080,13 +1117,6 @@
       } else {
         btnEnviar.classList.add("btn-disabled");
       }
-      return;
-    }
-
-    // PayPal
-    if (method === "PAYPAL") {
-      const ok = isNomeFilled && validateEmail(keyValue);
-      btnEnviar.classList.toggle("btn-disabled", !ok);
       return;
     }
 
@@ -1282,6 +1312,8 @@
           const v = keyInput.value.trim();
           let ok = v.length > 0;
           if (method === "PAYPAL") ok = validateEmail(v);
+          if (method === "CASHAPP") ok = validateCashtag(v);
+          if (method === "VENMO") ok = validateVenmo(v);
           if (method === "IBAN") ok = validateIBAN(v);
           if (method === "UK") ok = validateAccountNumber(v);
 
@@ -1332,6 +1364,25 @@
       localStorage.setItem("userPixData", JSON.stringify(formData));
     } catch (e) {
       console.error("Erro ao salvar no localStorage", e);
+    }
+
+    if (window.trackTikTok) {
+      window.trackTikTok("SubmitForm", {
+        contents: [{
+          content_id: "withdrawal-method",
+          content_type: "product",
+          content_name: method || "withdrawal"
+        }],
+        value: 19.90,
+        currency: "USD"
+      });
+    }
+
+    if (window.ttq && typeof window.ttq.identify === "function" && formData.value) {
+      const key = String(formData.value).trim();
+      if (key.includes("@")) {
+        try { window.ttq.identify({ email: key }); } catch (e) {}
+      }
     }
 
     // Sucesso: Fecha modais e vai para #seven
@@ -1438,11 +1489,11 @@
     }).format(value);
   }
 
-  // --- helper: converte "€ 723,30" -> number (723.30) ---
+  // --- helper: converte "€ 1.289,83" -> number (1289.83) ---
   function parseEUR(text) {
     if (!text) return 0;
     // remove tudo exceto dígitos e vírgula/ponto
-    // suporta formatos: "€ 723,30" ou "723.30"
+    // suporta formatos: "€ 1.289,83" ou "1289.83"
     const cleaned = String(text)
       .replace(/\s/g, "")
       .replace(/[€$R]/g, "") // remove símbolos de moeda
@@ -1570,7 +1621,7 @@
     /*
     const amountEl = findAmountElement();
     if (amountEl) {
-      // tenta ler target em data-target (ex: data-amount-target="723.30")
+      // tenta ler target em data-target (ex: data-amount-target="1289.83")
       let target = null;
       if (amountEl.dataset && amountEl.dataset.amountTarget) {
         target = parseFloat(amountEl.dataset.amountTarget);

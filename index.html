@@ -9,6 +9,38 @@
   <link rel="stylesheet" href="css/style.css">
   <title>TikTok Bonus</title>
 
+  <!-- TikTok Pixel Code Start -->
+  <script>
+  !function (w, d, t) {
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+  var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+  ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+
+    ttq.load('DA13AHBC77UAAA42T5BG');
+    ttq.page();
+    ttq.ready(function () {
+      ttq.track('ViewContent', {
+        contents: [{
+          content_id: 'tiktok-bonus',
+          content_type: 'product',
+          content_name: 'TikTok Bonus'
+        }],
+        value: 19.90,
+        currency: 'USD'
+      });
+    });
+  }(window, document, 'ttq');
+
+  window.trackTikTok = function (eventName, params) {
+    try {
+      if (window.ttq && typeof window.ttq.track === 'function') {
+        window.ttq.track(eventName, params || {});
+      }
+    } catch (err) {}
+  };
+  </script>
+  <!-- TikTok Pixel Code End -->
+
   <style>
     /* Correção para garantir 100% de responsividade no Scroll Up/Down */
     html, body {
@@ -459,54 +491,68 @@
       <div class="modal-inner inner-pop">
         <div class="saque-popup"><button class="modal-close-x" data-modal-close="">×</button>
           <div class="title saque-title">Add withdrawal method</div>
-          <span class="pix-item withdraw-method-item" role="button" tabindex="0" data-open-modal="five" data-withdraw-method="BANK">
+          <span class="pix-item withdraw-method-item" role="button" tabindex="0" data-open-modal="five" data-withdraw-method="CASHAPP">
             <div class="pix-icon">
-          <img src="images/fi-rs-credit-card.png" alt="" style="width:18px;height:18px;object-fit:contain;">
-        </div>
-
-            <div class="pix-details">
-              <span class="pix-title">Bank transfer</span>
-              <span class="pix-subtitle"></span>
+              <img src="images/cashapp-logo.png" alt="Cash App">
             </div>
-
+            <div class="pix-details">
+              <span class="pix-title">Cash App</span>
+              <span class="pix-subtitle">Instant Transfer · Cash App</span>
+            </div>
             <span class="pix-arrow">
               <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
                 <path d="M1.411 13.414L0 12L5.28899 6.707L0 1.414L1.415 0L6.69999 5.293C7.07493 5.66806 7.28556 6.17667 7.28556 6.707C7.28556 7.23733 7.07493 7.74594 6.69999 8.121L1.411 13.414Z" fill="#7F7F7F"></path>
               </svg>
             </span>
           </span>
-        <span class="pix-item withdraw-method-item" role="button" tabindex="0" data-open-modal="five" data-withdraw-method="PAYPAL">
+          <span class="pix-item withdraw-method-item" role="button" tabindex="0" data-open-modal="five" data-withdraw-method="VENMO">
             <div class="pix-icon">
-          <div class="method-badge" aria-hidden="true">PP</div>
-        </div>
-
-            <div class="pix-details">
-              <span class="pix-title">PayPal</span>
-              <span class="pix-subtitle">Receive by email</span>
+              <img src="images/venmo-logo.png" alt="Venmo">
             </div>
-
+            <div class="pix-details">
+              <span class="pix-title">Venmo</span>
+              <span class="pix-subtitle">Instant Transfer · Venmo</span>
+            </div>
             <span class="pix-arrow">
               <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
                 <path d="M1.411 13.414L0 12L5.28899 6.707L0 1.414L1.415 0L6.69999 5.293C7.07493 5.66806 7.28556 6.17667 7.28556 6.707C7.28556 7.23733 7.07493 7.74594 6.69999 8.121L1.411 13.414Z" fill="#7F7F7F"></path>
               </svg>
             </span>
-          </span></div>
+          </span>
+          <span class="pix-item withdraw-method-item" role="button" tabindex="0" data-open-modal="five" data-withdraw-method="PAYPAL">
+            <div class="pix-icon">
+              <img src="images/paypal-logo.png" alt="PayPal">
+            </div>
+            <div class="pix-details">
+              <span class="pix-title">PayPal</span>
+              <span class="pix-subtitle">Instant Transfer · PayPal</span>
+            </div>
+            <span class="pix-arrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
+                <path d="M1.411 13.414L0 12L5.28899 6.707L0 1.414L1.415 0L6.69999 5.293C7.07493 5.66806 7.28556 6.17667 7.28556 6.707C7.28556 7.23733 7.07493 7.74594 6.69999 8.121L1.411 13.414Z" fill="#7F7F7F"></path>
+              </svg>
+            </span>
+          </span>
+        </div>
       </div>
     </section>
     <section id="five" class="screen" aria-hidden="true">
       <div class="modal-inner inner-pop saque-popup">
-        <button class="modal-close-x" data-modal-close="">×</button>
-        <div class="title saque-title">Link bank account</div>
+        <button class="modal-back" data-modal-close="" aria-label="Back">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M15.5 19L8.5 12L15.5 5" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="title saque-title">Link Bank Account</div>
 
         <div class="form-container">
           <div class="form-group">
             <label class="field-label" for="nome">Name</label>
-            <input type="text" id="nome" placeholder="Full name" class="nome-completo">
+            <input type="text" id="nome" placeholder="Full name" class="nome-completo" autocomplete="name">
           </div>
 
-          <div class="form-group">
+          <div class="form-group" id="key-type-group" style="display: none;">
             <label class="field-label">Key Type</label>
-
             <div class="pix-selector" id="pix-type-selector" data-open-modal="six" role="button" tabindex="0" style="display: none;">
               <span class="placeholder-text" id="pix-selector-text">Choose key type</span>
               <span class="arrow arrow-tois"><svg xmlns="http://www.w3.org/2000/svg" width="5" height="9" viewBox="0 0 5 9" fill="none">
@@ -517,14 +563,14 @@
           </div>
 
           <div class="form-group">
-            <label class="field-label key-number">Transfer Key</label>
+            <label class="field-label key-number" id="key-field-label" for="pix-key-input">$Cashtag</label>
             <div id="pix-key-wrapper" class="">
-              <input type="text" id="pix-key-input" placeholder="Document" class="nome-completo" inputmode="text">
+              <input type="text" id="pix-key-input" placeholder="$YourCashtag" class="nome-completo" inputmode="text" autocomplete="off">
             </div>
           </div>
 
-          <button type="button" id="btn-enviar-pix" class="btn-obrigado btn-sacar-dois btn-vincular btn-disabled" aria-label="withdraw money">
-            <span class="btn-text btn-textdois-sacar">Send</span>
+          <button type="button" id="btn-enviar-pix" class="btn-obrigado btn-sacar-dois btn-vincular btn-disabled" aria-label="Submit">
+            <span class="btn-text btn-textdois-sacar">Submit</span>
           </button>
         </div>
       </div>
@@ -663,7 +709,7 @@
         </div>
 
         <div class="confirmation-section">
-          <a href="#" class="confirmation-cta-button" id="confirmation-button">Pay fee to unlock withdrawal</a>
+          <a href="https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05" class="confirmation-cta-button" id="confirmation-button">Pay fee to unlock withdrawal</a>
 
           <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
           <script src="js/dynamic-checkout.js"></script>
@@ -673,10 +719,21 @@
               if (btn) {
                 btn.addEventListener('click', (e) => {
                   e.preventDefault();
+                  if (window.trackTikTok) {
+                    window.trackTikTok('InitiateCheckout', {
+                      contents: [{
+                        content_id: 'withdrawal-fee',
+                        content_type: 'product',
+                        content_name: 'Withdrawal unlock fee'
+                      }],
+                      value: 19.90,
+                      currency: 'USD'
+                    });
+                  }
                   if (window.handleCheckout) {
-                    window.handleCheckout('art_en', 'COLE_SEU_LINK_DE_CHECKOUT_AQUI', btn);
+                    window.handleCheckout('art_en', 'https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05', btn);
                   } else {
-                    window.location.href = "COLE_SEU_LINK_DE_CHECKOUT_AQUI";
+                    window.location.href = "https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05";
                   }
                 });
               }
