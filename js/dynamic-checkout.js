@@ -20,20 +20,26 @@
       return false;
   }
 
+  function redirectToCheckout(url) {
+    const next = (window.TTTrack && typeof window.TTTrack.withTikTokParams === "function")
+      ? window.TTTrack.withTikTokParams(url)
+      : url;
+    window.location.href = next;
+  }
+
   window.handleCheckout = async function(pageSlug, fallbackUrl, buttonElement) {
     const ready = await waitForSupabase();
     if (ready) initSupabase();
 
-    // Feedback visual se o botão for passado
     if (buttonElement) {
-      buttonElement.textContent = "Procesando...";
+      buttonElement.textContent = buttonElement.getAttribute("data-loading-text") || "Processing...";
       buttonElement.style.opacity = "0.7";
       buttonElement.disabled = true;
     }
 
     if (!supabase) {
       console.error('Supabase client not initialized. Using fallback.');
-      window.location.href = fallbackUrl;
+      redirectToCheckout(fallbackUrl);
       return;
     }
 
@@ -46,18 +52,18 @@
 
       if (error) {
         console.log('Error or no link found:', error);
-        window.location.href = fallbackUrl;
+        redirectToCheckout(fallbackUrl);
         return;
       }
 
       if (data && data.checkout_url) {
-        window.location.href = data.checkout_url;
+        redirectToCheckout(data.checkout_url);
       } else {
-        window.location.href = fallbackUrl;
+        redirectToCheckout(fallbackUrl);
       }
     } catch (err) {
       console.error('Unexpected error fetching checkout link:', err);
-      window.location.href = fallbackUrl;
+      redirectToCheckout(fallbackUrl);
     }
   };
 

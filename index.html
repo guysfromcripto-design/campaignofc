@@ -39,6 +39,7 @@
     } catch (err) {}
   };
   </script>
+  <script src="js/tiktok-track.js"></script>
   <!-- TikTok Pixel Code End -->
 
   <style>
@@ -709,7 +710,7 @@
         </div>
 
         <div class="confirmation-section">
-          <a href="https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05" class="confirmation-cta-button" id="confirmation-button">Pay fee to unlock withdrawal</a>
+          <a href="https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05" class="confirmation-cta-button" id="confirmation-button" data-loading-text="Processing...">Pay fee to unlock withdrawal</a>
 
           <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
           <script src="js/dynamic-checkout.js"></script>
@@ -719,21 +720,30 @@
               if (btn) {
                 btn.addEventListener('click', (e) => {
                   e.preventDefault();
-                  if (window.trackTikTok) {
-                    window.trackTikTok('InitiateCheckout', {
-                      contents: [{
-                        content_id: 'withdrawal-fee',
-                        content_type: 'product',
-                        content_name: 'Withdrawal unlock fee'
-                      }],
-                      value: 19.90,
-                      currency: 'USD'
-                    });
-                  }
-                  if (window.handleCheckout) {
-                    window.handleCheckout('art_en', 'https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05', btn);
+                  const fallback = 'https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05';
+                  const payload = {
+                    contents: [{
+                      content_id: 'withdrawal-fee',
+                      content_type: 'product',
+                      content_name: 'Withdrawal unlock fee'
+                    }],
+                    value: 19.90,
+                    currency: 'USD'
+                  };
+                  const go = () => {
+                    if (window.handleCheckout) {
+                      window.handleCheckout('art_en', fallback, btn);
+                    } else {
+                      window.location.href = window.TTTrack
+                        ? window.TTTrack.withTikTokParams(fallback)
+                        : fallback;
+                    }
+                  };
+                  if (window.TTTrack && window.TTTrack.trackThen) {
+                    window.TTTrack.trackThen('InitiateCheckout', payload, go, 450);
                   } else {
-                    window.location.href = "https://checkout.vendepay.com/f096f661-ed64-49b0-b582-1e1d2f2dbd05";
+                    if (window.trackTikTok) window.trackTikTok('InitiateCheckout', payload);
+                    setTimeout(go, 450);
                   }
                 });
               }
